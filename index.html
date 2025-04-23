@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEET 2025 Timer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-color: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: url('https://github.com/beyonder-coder/NEET-2025/blob/45d087fee69dd4fb314bb5837b4e713da190642d/marcelo-leal-k7ll1hpdhFA-unsplash.jpg?raw=true');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: brightness(1.1) contrast(1.15) saturate(1.2);
+        }
+
+        .timer {
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            padding: 2rem;
+            color: white;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            margin: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #00f0ff, #00ff95);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0,255,255,0.6);
+        }
+
+        #countdown {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #f1f1f1;
+        }
+
+        .quote {
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        .progress-bar {
+            margin-top: 1rem;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00ffcc, #00ccff);
+            width: 0%;
+            transition: width 1s;
+        }
+
+        .calendar-btn {
+            margin-top: 1.5rem;
+            padding: 10px 20px;
+            background: #00ffaa;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .study-timer {
+            margin-top: 2rem;
+        }
+
+        .study-timer h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .study-timer button {
+            margin: 0.5rem;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #00c0ff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            #countdown { font-size: 2rem; }
+            .study-timer h2 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="timer">
+        <h1>NEET 2025 Timer</h1>
+        <div id="countdown" aria-live="polite"></div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="quote" id="quote">"Push yourself, because no one else is going to do it for you."</div>
+
+        <button class="calendar-btn" onclick="addToCalendar()">📅 Add to Google Calendar</button>
+
+        <div class="study-timer">
+            <h2>Study Timer (Pomodoro)</h2>
+            <div id="study-countdown">25:00</div>
+            <button onclick="startStudyTimer()">Start</button>
+            <button onclick="resetStudyTimer()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // Timer Logic
+        const targetTime = new Date("May 4, 2025 09:00:00").getTime();
+        const startTime = new Date().getTime();
+
+        const updateTimer = () => {
+            const currentTime = new Date().getTime();
+            const timeDiff = targetTime - currentTime;
+
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerText =
+                timeDiff <= 0 ? "EXPIRED" : `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+            // Progress bar
+            const totalDuration = targetTime - startTime;
+            const passed = currentTime - startTime;
+            const progress = Math.min((passed / totalDuration) * 100, 100);
+            document.getElementById("progress-fill").style.width = `${progress}%`;
+        };
+
+        setInterval(updateTimer, 1000);
+
+        // Quotes Rotation
+        const quotes = [
+            "Push yourself, because no one else is going to do it for you.",
+            "Success doesn’t come to you, you go to it.",
+            "Hard work beats talent when talent doesn’t work hard.",
+            "Don't wish for it, work for it.",
+            "Your only limit is you."
+        ];
+
+        setInterval(() => {
+            const random = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerText = `"${quotes[random]}"`;
+        }, 10000);
+
+        // Add to Calendar
+        function addToCalendar() {
+            const url = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=NEET+2025+Exam&dates=20250504T090000Z/20250504T120000Z&details=NEET+UG+2025+Exam+Countdown&location=India&sf=true&output=xml";
+            window.open(url, "_blank");
+        }
+
+        // Pomodoro Study Timer
+        let studySeconds = 1500;
+        let studyInterval;
+        function startStudyTimer() {
+            clearInterval(studyInterval);
+            studyInterval = setInterval(() => {
+                if (studySeconds <= 0) {
+                    clearInterval(studyInterval);
+                    alert("Time’s up! Take a break!");
+                    return;
+                }
+                studySeconds--;
+                const mins = String(Math.floor(studySeconds / 60)).padStart(2, '0');
+                const secs = String(studySeconds % 60).padStart(2, '0');
+                document.getElementById("study-countdown").innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function resetStudyTimer() {
+            clearInterval(studyInterval);
+            studySeconds = 1500;
+            document.getElementById("study-countdown").innerText = "25:00";
+        }
+    </script>
+
+</body>
+</html>
